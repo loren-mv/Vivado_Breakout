@@ -49,32 +49,33 @@ module square #(
     output reg [11:0] y,
     output reg [8:0] score,
     output reg endgame = 0,
-    output reg win_game = 0,
     output reg [16:0] col_detected = 0
     );
-    
+
     reg [8:0] s;
     reg [11:0] x = IX;   // horizontal position of square centre
     reg [11:0] y = IY;   // vertical position of square centre
     reg y_dir = IY_DIR;  // vertical animation direction
     reg x_dir;           // TODO: create random direction generator
-    reg [3:0] incx = 7, incy = 6; // TODO: increment speed over # of collisions
+    reg [3:0] incx = 6, incy = 5; // TODO: increment speed over # of collisions
 
     assign o_x1 = x - H_SIZE;  // left: centre minus half horizontal size
     assign o_x2 = x + H_SIZE;  // right
     assign o_y1 = y - H_SIZE;  // top
     assign o_y2 = y + H_SIZE;  // bottom   
-       
+
     reg [28:0] ctr; // counter to assign direction
-    
+
     wire y_state, y_dn, y_up;
     debounce detecty(.clk(i_clk), .i_btn(y_dir), .o_state(y_state), .o_ondn(y_dn), .o_onup(y_up)); // detect change in x_dir
-    
+
     wire x_state, x_dn, x_up;
     debounce detectx(.clk(i_clk), .i_btn(x_dir), .o_state(x_state), .o_ondn(x_dn), .o_onup(x_up)); // detect change in y_dir
-
+    
     integer i;
-    always @ (negedge i_clk)
+
+
+    always @ (posedge i_clk)
     begin
         ctr = ctr + 1; // increment counter
         if (ctr ==  500000000) begin // count to second(s)
@@ -86,10 +87,10 @@ module square #(
             y <= IY; // initialize ball to starting y
             x_dir <= ctr; // initialize ball x direction
             y_dir <= IY_DIR; // intialize ball y direction
-            incx <= 2; // intialize x speed
-            incy <= 2; // intialize with y speed
+            incx <= 3; // intialize x speed
+            incy <= 3; // intialize with y speed
         end
-        
+
         //ball hits bottom end game
         if (y >= D_HEIGHT - H_SIZE - 1 & toggle)  // on reset return to starting position
         begin
@@ -98,17 +99,16 @@ module square #(
             y <= IY; // initialize ball to starting y
             x_dir <= ctr; // initialize ball x direction
             y_dir <= IY_DIR; // intialize ball y direction
-            incx <= 2; // intialize x speed
-            incy <= 2; // intialize y speed
+            incx <= 1; // intialize x speed
+            incy <= 1; // intialize y speed
         end
         
-        
         /*
-        if (x_up & incx !=10) begin // check is maximum speed or change in x_dir
+        if (x_up & incx !=7) begin // check is maximum speed or change in x_dir
             incx <= incx + 1; // increase incx one unit
         
         end
-        if (y_up & incy != 10) begin // check is maximum speed or change in y_dir
+        if (y_up & incy != 7) begin // check is maximum speed or change in y_dir
                 incy <= incy + 1; // increase incy one unit
                 if ((com[0] | com[1]) & incx != 10) begin // check if left or right paddle during collision
                     incx <= incx + 1; // increase incx one unit
@@ -121,10 +121,10 @@ module square #(
             y <= IY; // initialize ball to starting y
             x_dir <= ctr; // initialize ball x direction
             y_dir <= IY_DIR; // intialize ball y direction
-            incx <= 2; // intialize x speed
-            incy <= 2; // intialize y speed
+            incx <= 1; // intialize x speed
+            incy <= 1; // intialize y speed
         end
-        
+
         //treat ball as top left pixel of the ball(square)
         if (i_animate & i_ani_stb & !endgame & mode)
         begin;
@@ -134,16 +134,16 @@ module square #(
             if (x <= H_SIZE + 1) begin  // edge of square is at left of screen
                 x_dir <= 1;  // change direction to right
             end
-            
+
             if (x >= (D_WIDTH - H_SIZE - 1)) begin  // edge of square at right
                 x_dir <= 0;  // change direction to left 
             end
-                     
+
             if (y <= H_SIZE + 1) begin // edge of square at top of screen
                 y_dir <= 1;  // change direction to down
-                
+
             end
-            
+
             if (y >= (D_HEIGHT - H_SIZE - 1) | ((o_y2 >= PY - PH) & (o_y2 > 0) & (o_x1 <= i_x2) & (o_x2 >= i_x1))) begin //|| y == (PY - PH - 1))  // paddle hit
                 y_dir <= 0;  // change direction to up
                 if (com[1] & !com[0])
@@ -151,53 +151,44 @@ module square #(
                 else if (com[0] & !com[1])
                     x_dir <= 1;
             end
-
             if (hit_block != 0) begin
                 for (i = 34; i > 1; i = i-2) begin
                     if (hit_block[(i-1) -: 2] == 2'b01) begin
                         y_dir = ~y_dir;
                         s = s + 5; 
                         col_detected[((i/2) -1)] = 1;  end
-                    
+
                     if (hit_block[(i-1) -: 2] == 2'b10) begin
                         x_dir = ~x_dir;
                         s = s + 5; 
                         col_detected[((i/2) - 1)] = 1; end
-                        
+
                     if (hit_block[(i-1) -: 2] == 2'b11) begin
                         x_dir = ~x_dir; 
                         y_dir = ~y_dir;
                         s = s + 5;
                         col_detected[((i/2) - 1)] = 1; end
-                        
+
                 end
-                
+
             end
-            
-        end
+
+       end
     end
-    
- 
-     
-    always @(posedge i_clk) begin
-        if (col_detected == 17'b11111111111111111) win_game = 1;
-    end
-    /*
+
+/*
     always @(posedge i_clk)
     begin
-        if (col_detected) // if paddle collision
+        if (y_up) // if paddle collision
             s = s + 1; // increment score
         else if (endgame | !mode) // if game ended or not in correct mode
             s = 0; // assign score to zero
     end
-  */
-  /*
-  always @ (posedge i_clk, col_detected) begin
-    s = s+1; end
-    */
-    
+*/
+
     always @(*)
     begin
         score = s; // assign score
     end    
+
 endmodule
