@@ -22,7 +22,7 @@
 
 module top(
     input wire CLK, // 100 Mhz clock
-    input wire RST_BTN, // reset button
+    //input wire RST_BTN, // reset button
     input wire [1:0] BTN_LR, // left and right buttons
     input wire BTNC, // mode change button
     output reg VGA_HS, // horizontal sync
@@ -32,11 +32,15 @@ module top(
     output reg [3:0] VGA_B, // blue channels
     output reg [6:0] seg, // 7-segment segments 
     output reg [7:0] AN // 7-segment anodes
+    //output wire [33:32] hit_block, //changed for testing purposes
+    //output wire col_detected  //changed for testing purposes
     );
-    
+    parameter RST_BTN = 0;
     wire [3:0] vga_r, vga_g, vga_b; // pong game vga
     wire [3:0] vga_r_end, vga_g_end, vga_b_end; // game over menu vga
     wire [3:0] vga_r_start, vga_g_start, vga_b_start; // start menu vga 
+    wire [33:0] hit_block;
+    wire [16:0] col_detected;
 
     wire vga_hs, vga_vs; // pong game horizontal and vertical sync
     wire vga_h_start, vga_v_start; // start menu horizontal and vertical sync
@@ -51,11 +55,12 @@ module top(
     
     wire endgame; // game over flag
     wire mode; // mode 0 - start menu, 1 - pong game
+    wire win_game;
         
     clock_divider #(.DIVISOR(500000)) clk600Hz(.clk_in(CLK), .clk_out(slow_clk));  // create 200 Hz clock for seven segment display
     
     game pong(.mode(mode), .CLK(CLK), .BTN_LR(BTN_LR), .VGA_HS(vga_hs), .VGA_VS(vga_vs), //changed to test
-    .VGA_R(vga_r), .VGA_G(vga_g), .VGA_B(vga_b), .endgame(endgame), .score(curr_score)); // initialize pong game
+    .VGA_R(vga_r), .VGA_G(vga_g), .VGA_B(vga_b), .endgame(endgame), .win_game(win_game), .score(curr_score), .col_detected(col_detected), .hit_block(hit_block)); // initialize pong game
     
     menu_screen(.mode(mode), .CLK(CLK), .VGA_HS(vga_h_start), .VGA_VS(vga_v_start), 
     .VGA_R(vga_r_start), .VGA_G(vga_g_start), .VGA_B(vga_b_start)); // start menu driver
@@ -71,6 +76,7 @@ module top(
     always @(*)
     begin
         case(mode)
+            //TODO: Trigger a win game screen using variable win_game
             0: begin
                 {seg, AN, VGA_HS, VGA_VS, VGA_R, VGA_G, VGA_B} = {h_seg, h_anode, vga_h_start, vga_v_start, vga_r_start, vga_g_start, vga_b_start}; // start menu
             end

@@ -24,8 +24,8 @@
 
 module bg_gen
     #(
-    MEMFILE = "over.mem",
-    PALETTE = "over_palette.mem"
+    MEMFILE = "gameover.mem",
+    PALETTE = "gameover_palette.mem"
     )
     (
     input wire CLK,             // board clock: 100 MHz on Arty/Basys3/Nexys

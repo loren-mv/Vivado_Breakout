@@ -40,12 +40,17 @@ module square #(
     input wire i_clk,         // base clock
     input wire i_ani_stb,     // animation clock: pixel clock is 1 pix/frame
     input wire i_animate,     // animate when input is high
+    input wire [33:0] hit_block,
     output wire [11:0] o_x1,  // square left edge: 12-bit value: 0-4095
     output wire [11:0] o_x2,  // square right edge
     output wire [11:0] o_y1,  // square top edge
     output wire [11:0] o_y2,   // square bottom edge
+    output reg [11:0] x,
+    output reg [11:0] y,
     output reg [8:0] score,
-    output reg endgame = 0
+    output reg endgame = 0,
+    output reg win_game = 0,
+    output reg [16:0] col_detected = 0
     );
     
     reg [8:0] s;
@@ -53,8 +58,8 @@ module square #(
     reg [11:0] y = IY;   // vertical position of square centre
     reg y_dir = IY_DIR;  // vertical animation direction
     reg x_dir;           // TODO: create random direction generator
-    reg [3:0] incx = 6, incy = 5; // TODO: increment speed over # of collisions
-    
+    reg [3:0] incx = 7, incy = 6; // TODO: increment speed over # of collisions
+
     assign o_x1 = x - H_SIZE;  // left: centre minus half horizontal size
     assign o_x2 = x + H_SIZE;  // right
     assign o_y1 = y - H_SIZE;  // top
@@ -68,8 +73,8 @@ module square #(
     wire x_state, x_dn, x_up;
     debounce detectx(.clk(i_clk), .i_btn(x_dir), .o_state(x_state), .o_ondn(x_dn), .o_onup(x_up)); // detect change in y_dir
 
-      
-    always @ (posedge i_clk)
+    integer i;
+    always @ (negedge i_clk)
     begin
         ctr = ctr + 1; // increment counter
         if (ctr ==  500000000) begin // count to second(s)
@@ -81,8 +86,8 @@ module square #(
             y <= IY; // initialize ball to starting y
             x_dir <= ctr; // initialize ball x direction
             y_dir <= IY_DIR; // intialize ball y direction
-            incx <= 1; // intialize x speed
-            incy <= 1; // intialize with y speed
+            incx <= 2; // intialize x speed
+            incy <= 2; // intialize with y speed
         end
         
         //ball hits bottom end game
@@ -93,9 +98,11 @@ module square #(
             y <= IY; // initialize ball to starting y
             x_dir <= ctr; // initialize ball x direction
             y_dir <= IY_DIR; // intialize ball y direction
-            incx <= 1; // intialize x speed
-            incy <= 1; // intialize y speed
+            incx <= 2; // intialize x speed
+            incy <= 2; // intialize y speed
         end
+        
+        
         /*
         if (x_up & incx !=10) begin // check is maximum speed or change in x_dir
             incx <= incx + 1; // increase incx one unit
@@ -114,8 +121,8 @@ module square #(
             y <= IY; // initialize ball to starting y
             x_dir <= ctr; // initialize ball x direction
             y_dir <= IY_DIR; // intialize ball y direction
-            incx <= 1; // intialize x speed
-            incy <= 1; // intialize y speed
+            incx <= 2; // intialize x speed
+            incy <= 2; // intialize y speed
         end
         
         //treat ball as top left pixel of the ball(square)
@@ -144,22 +151,53 @@ module square #(
                 else if (com[0] & !com[1])
                     x_dir <= 1;
             end
+
+            if (hit_block != 0) begin
+                for (i = 34; i > 1; i = i-2) begin
+                    if (hit_block[(i-1) -: 2] == 2'b01) begin
+                        y_dir = ~y_dir;
+                        s = s + 5; 
+                        col_detected[((i/2) -1)] = 1;  end
+                    
+                    if (hit_block[(i-1) -: 2] == 2'b10) begin
+                        x_dir = ~x_dir;
+                        s = s + 5; 
+                        col_detected[((i/2) - 1)] = 1; end
+                        
+                    if (hit_block[(i-1) -: 2] == 2'b11) begin
+                        x_dir = ~x_dir; 
+                        y_dir = ~y_dir;
+                        s = s + 5;
+                        col_detected[((i/2) - 1)] = 1; end
+                        
+                end
+                
+            end
             
-            
-       end
+        end
     end
     
+ 
+     
+    always @(posedge i_clk) begin
+        if (col_detected == 17'b11111111111111111) win_game = 1;
+    end
+    /*
     always @(posedge i_clk)
     begin
-        if (y_up) // if paddle collision
+        if (col_detected) // if paddle collision
             s = s + 1; // increment score
         else if (endgame | !mode) // if game ended or not in correct mode
             s = 0; // assign score to zero
     end
+  */
+  /*
+  always @ (posedge i_clk, col_detected) begin
+    s = s+1; end
+    */
     
     always @(*)
     begin
         score = s; // assign score
     end    
-    
 endmodule
