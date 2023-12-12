@@ -39,7 +39,7 @@ module game7(
     localparam PY = 480 - PH; // initial paddle y
     localparam PX = 320; // initial paddle x
 
-    localparam BX = 130;
+    localparam BX = 127;
     localparam BY = 150;
     localparam BW = 30; // block width
     localparam BH = 10; // block height
@@ -403,7 +403,7 @@ module game7(
         .hit_block(hit_block[9:8])
     );
     
-    block #(.B_WIDTH(10), .B_HEIGHT(36), .IX(BX + 322 + 10), .IY(BY - 6)) b15(
+    block #(.B_WIDTH(10), .B_HEIGHT(36), .IX(BX + 333 + 10), .IY(BY - 6)) b15(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
@@ -421,7 +421,7 @@ module game7(
         .hit_block(hit_block[7:6])
     );
     
-    block #(.B_WIDTH(10), .B_HEIGHT(36), .IX(BX + 322 + 10), .IY(BY + 72)) b16(
+    block #(.B_WIDTH(10), .B_HEIGHT(36), .IX(BX + 333 + 10), .IY(BY + 72)) b16(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
@@ -439,7 +439,7 @@ module game7(
         .hit_block(hit_block[5:4])
     );
     
-    block # (.B_WIDTH(10), .B_HEIGHT(36), .IX(BX + 344 + 10), .IY(BY - 6)) b17(
+    block # (.B_WIDTH(10), .B_HEIGHT(36), .IX(BX + 366 + 10), .IY(BY - 6)) b17(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
@@ -457,7 +457,7 @@ module game7(
         .hit_block(hit_block[3:2])
     );
     
-        block #(.B_WIDTH(10), .B_HEIGHT(36), .IX(BX + 344 + 10), .IY(BY + 72)) b18(
+        block #(.B_WIDTH(10), .B_HEIGHT(36), .IX(BX + 366 + 10), .IY(BY + 72)) b18(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
