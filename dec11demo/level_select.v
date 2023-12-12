@@ -36,12 +36,14 @@ module level_select(
     //set all of the encoding for levels
     always @(*)
         case(current_state) 
-        SM: next_state = (other_in) ? LS : SM; //next state selection for start menu
+        SM: begin
+            next_state = (other_in) ? LS : SM; //next state selection for start menu
+            end
         LS: begin //next state selection for Level Select menu
-            if(level_in == 4'b0001)
+            if(level_in == 4'b0001) begin
                 next_state = L1;
-            else if(level_in == 4'b0010)
-                next_state = L2;
+            end else if(level_in == 4'b0010)
+                next_state = L2;                
             else if(level_in == 4'b0011)
                 next_state = L3;
             else if(level_in == 4'b0100)
