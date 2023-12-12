@@ -28,7 +28,8 @@ module block
     IY=20,         // initial vertical position of square centre
     IX_DIR=0,       // initial horizontal direction: 0 idle, 1 is left, 2 is right
     D_WIDTH=640,    // width of display
-    D_HEIGHT=480    // height of display
+    D_HEIGHT=480,    // height of display
+    S_SIZE = 5
     )
     (
     input wire toggle,
@@ -48,7 +49,6 @@ module block
     output reg [11:0] o_y1,  // square top edge
     output reg [11:0] o_y2,   // square bottom edge
     output reg [8:0] score,
-    output reg endgame = 0,
     output reg [1:0] hit_block = 0
     );
 
@@ -65,8 +65,12 @@ module block
     
     always @ (posedge i_clk) begin
     
-            //bottom 
-        if(s_y == y + B_HEIGHT + 10 && (s_x <= x + B_WIDTH + 10 && s_x >= x - B_WIDTH - 10) ) begin
+       if(!mode)begin
+            x = IX;   // horizontal position of block centre
+            y = IY;   // vertical position of block centre
+       end
+//            //bottom 
+        if(s_y == (y + B_HEIGHT + S_SIZE) && (s_x <= (x + B_WIDTH + S_SIZE)) && (s_x >=( x - B_WIDTH - S_SIZE)) ) begin
       
             hit_block = 2'b01;
 
@@ -76,7 +80,7 @@ module block
             end
 
             //top
-        else if(s_y == y - B_HEIGHT - 10 && (s_x <= x + B_WIDTH + 10 && s_x >= x - B_WIDTH - 10) ) begin
+        else if(s_y == y - B_HEIGHT - S_SIZE && (s_x <= x + B_WIDTH + S_SIZE && s_x >= x - B_WIDTH - S_SIZE) ) begin
             
             hit_block = 2'b01;       
             x = 3000;
@@ -86,7 +90,7 @@ module block
 
      //checking if ball collided horit=zontally (hit_block == 10)
             //right
-         else if(s_x == x + B_WIDTH + 10 && (s_y <= y + B_HEIGHT + 10 && s_y >= y - B_HEIGHT - 10) ) begin
+         else if(s_x == x + B_WIDTH + S_SIZE && (s_y <= y + B_HEIGHT + S_SIZE && s_y >= y - B_HEIGHT - S_SIZE) ) begin
          
             hit_block = 2'b10;
             x = 3000;
@@ -94,7 +98,7 @@ module block
             end
 
             //left
-         else if(s_x == x - B_WIDTH - 10 && (s_y <= y + B_HEIGHT + 10 && s_y >= y - B_HEIGHT - 10) ) begin
+         else if(s_x == x - B_WIDTH - S_SIZE && (s_y <= y + B_HEIGHT + S_SIZE && s_y >= y - B_HEIGHT - S_SIZE) ) begin
            
             hit_block = 2'b10;
 
@@ -103,10 +107,10 @@ module block
             end
 
             //edge case: if hit from exactly the corner
-          else if( (s_x == x - B_WIDTH - 10 && (s_y == y - B_HEIGHT - 10)) ||
-                   (s_x == x + B_WIDTH + 10 && (s_y == y - B_HEIGHT - 10)) ||
-                   (s_x == x - B_WIDTH - 10 && (s_y == y + B_HEIGHT + 10)) ||
-                   (s_x == x + B_WIDTH + 10 && (s_y == y + B_HEIGHT + 10)) ) begin
+          else if( (s_x == x - B_WIDTH - S_SIZE && (s_y == y - B_HEIGHT - S_SIZE)) ||
+                   (s_x == x + B_WIDTH + S_SIZE && (s_y == y - B_HEIGHT - S_SIZE)) ||
+                   (s_x == x - B_WIDTH - S_SIZE && (s_y == y + B_HEIGHT + S_SIZE)) ||
+                   (s_x == x + B_WIDTH + S_SIZE && (s_y == y + B_HEIGHT + S_SIZE)) ) begin
             
             hit_block = 2'b11;
 
@@ -116,6 +120,8 @@ module block
 
           //else if(hit_block != 2'b00) hit_block = 2'b00;
           else if(col_detected == 1) hit_block = 2'b00;
+          
+          
     
     end
     
