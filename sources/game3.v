@@ -50,8 +50,8 @@ module game3#(
     localparam IX = 320; // intial ball x
     localparam IY = 470 - PH - PH - 30; //initial ball y
     localparam B_SIZE = 5; // ball size
-    localparam speed_x = 1;
-    localparam speed_y = 1;
+    localparam speed_x = 3;
+    localparam speed_y = 2;
 
 
     reg [15:0] cnt = 0; // pixel clock counter

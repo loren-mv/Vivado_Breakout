@@ -34,39 +34,40 @@ module top(
     output wire [7:0] AN // 7-segment anodes
     );
 
-    wire [3:0] tempr1, tempr2, tempr3;
-    wire [3:0] tempg1, tempg2, tempg3;
-    wire [3:0] tempb1, tempb2, tempb3;
-    wire [3:0] gamer1, gamer2, gamer3, gamer4, gamer5, gamer6, gamer7, gamer8;
-    wire [3:0] gameg1, gameg2, gameg3, gameg4, gameg5, gameg6, gameg7, gameg8;
-    wire [3:0] gameb1, gameb2, gameb3, gameb4, gameb5, gameb6, gameb7, gameb8;
-    wire hs1, hs2, hs3;
-    wire vs1, vs2, vs3;
-    wire gamevs1, gamevs2, gamevs3, gamevs4, gamevs5, gamevs6, gamevs7, gamevs8; 
-    wire gamehs1, gamehs2, gamehs3, gamehs4, gamehs5, gamehs6, gamehs7, gamehs8;
-    wire [3:0] klvl;
-    wire [3:0] temp_state;
+    wire [3:0] tempr1, tempr2, tempr3; //non-level VGA red
+    wire [3:0] tempg1, tempg2, tempg3; //non-level VGA green
+    wire [3:0] tempb1, tempb2, tempb3; //non-level VGA blue
+    wire [3:0] gamer1, gamer2, gamer3, gamer4, gamer5, gamer6, gamer7, gamer8; //vga red for levels
+    wire [3:0] gameg1, gameg2, gameg3, gameg4, gameg5, gameg6, gameg7, gameg8; //vga green for levels
+    wire [3:0] gameb1, gameb2, gameb3, gameb4, gameb5, gameb6, gameb7, gameb8; //vga blue for levels
+    wire hs1, hs2, hs3; //non-level horizontal sync
+    wire vs1, vs2, vs3; //non-level veritcal sync
+    wire gamevs1, gamevs2, gamevs3, gamevs4, gamevs5, gamevs6, gamevs7, gamevs8; //horiz. sync for levels
+    wire gamehs1, gamehs2, gamehs3, gamehs4, gamehs5, gamehs6, gamehs7, gamehs8; //vert. sync for levels
+    wire [3:0] klvl; //level select keyboard outputs (1~8)
+    wire [3:0] temp_state; //current state from FSM
     
-    wire [8:0] curr_score1,curr_score2,curr_score3,curr_score4,curr_score5,curr_score6,curr_score7,curr_score8; 
-    wire [8:0] highest_score1,highest_score2,highest_score3,highest_score4,highest_score5,highest_score6,highest_score7,highest_score8; 
-    reg [8:0] temphighscore;
-    reg [8:0] tempscore; // current score bits
+    wire [13:0] curr_score1,curr_score2,curr_score3,curr_score4,curr_score5,curr_score6,curr_score7,curr_score8; //current score per level
+    wire [13:0] highest_score1,highest_score2,highest_score3,highest_score4,highest_score5,highest_score6,highest_score7,highest_score8; //high score per level
+    reg [13:0] temphighscore; //high score displayed on 7seg
+    reg [13:0] tempscore; // current score displayed on 7seg
     
     reg endgame; // game over flag
-    wire eg1, eg2, eg3, eg4,eg5,eg6,eg7,eg8;
-    reg win;
-    wire win1,win2,win3,win4,win5,win6,win7,win8;
-    wire other_out;
+    wire eg1, eg2, eg3, eg4,eg5,eg6,eg7,eg8;//end_game for levels
+    reg win; //win flag
+    wire win1,win2,win3,win4,win5,win6,win7,win8; //win_flag by level
+    wire other_out; //spacebar to move from start to level select and game over to level select
     wire [1:0] BTN_LR; // bit 0 - right, bit 1 - left
     
     parameter SM = 4'b1111, LS = 4'b0001, GO = 4'b0010;
     //set encoding for screen states
     parameter L1 = 4'b0011, L2 = 4'b0100, L3 = 4'b0101, L4  = 4'b0110, L5 = 4'b0111, L6 = 4'b1000, L7 = 4'b1001, L8 = 4'b1010;
     //set all of the encoding for levels
-    level_select level(.level_in(klvl),.current_state(temp_state),.other_in(other_out),.win(win),.lose(endgame),.clk(clk)); 
+    level_select level(.level_in(klvl),.current_state(temp_state),.other_in(other_out),.win(win),.lose(endgame),.clk(clk)); //game state fsm
     
-    keyboard_top paddle_inputs(.CLK100MHZ(clk),.PS2_CLK(PS2_CLK),.PS2_DATA(PS2_DATA),.UART_TXD(UART_TXD),.level(klvl),.move_right(BTN_LR[0]),.other_out(other_out),.move_left(BTN_LR[1])); //get key inputs for paddle
-        
+    keyboard_top paddle_inputs(.CLK100MHZ(clk),.PS2_CLK(PS2_CLK),.PS2_DATA(PS2_DATA),.UART_TXD(UART_TXD),.level(klvl),.move_right(BTN_LR[0]),.other_out(other_out),.move_left(BTN_LR[1])); 
+    //keyboard
+    
     menu_screen menu(.CLK(clk),.VGA_HS(hs1),.VGA_VS(vs1),.VGA_R(tempr1),.VGA_G(tempg1),.VGA_B(tempb1)); // start menu driver
     
     level_screen lev(.CLK(clk),.VGA_HS(hs2),.VGA_VS(vs2),.VGA_R(tempr2),.VGA_G(tempg2),.VGA_B(tempb2)); //level select screen driver
@@ -75,40 +76,40 @@ module top(
     
     minitop display(.clk(clk),.cathode(seg),.AN(AN),.current_score(tempscore),.high_score(temphighscore)); //scoreboard
     
-    scoretrack score1(.input_score(curr_score1),.high_score(highest_score1));
-    scoretrack score2(.input_score(curr_score2),.high_score(highest_score2));
-    scoretrack score3(.input_score(curr_score3),.high_score(highest_score3));
-    scoretrack score4(.input_score(curr_score4),.high_score(highest_score4));
-    scoretrack score5(.input_score(curr_score5),.high_score(highest_score5));
-    scoretrack score6(.input_score(curr_score6),.high_score(highest_score6));
-    scoretrack score7(.input_score(curr_score7),.high_score(highest_score7));
-    scoretrack score8(.input_score(curr_score8),.high_score(highest_score8));
+    scoretrack score1(.input_score(curr_score1),.high_score(highest_score1)); //score tracker for game 1
+    scoretrack score2(.input_score(curr_score2),.high_score(highest_score2)); //score tracker for game 2
+    scoretrack score3(.input_score(curr_score3),.high_score(highest_score3)); //score tracker for game 3
+    scoretrack score4(.input_score(curr_score4),.high_score(highest_score4)); //score tracker for game 4
+    scoretrack score5(.input_score(curr_score5),.high_score(highest_score5)); //score tracker for game 5
+    scoretrack score6(.input_score(curr_score6),.high_score(highest_score6)); //score tracker for game 6
+    scoretrack score7(.input_score(curr_score7),.high_score(highest_score7)); //score tracker for game 7
+    scoretrack score8(.input_score(curr_score8),.high_score(highest_score8)); //score tracker for game 8
     
-     game #(.MAXSCORE(85))breakout1 (.mode(temp_state == L1), .CLK(clk), .BTN_LR(BTN_LR), .VGA_HS(gamehs1), .VGA_VS(gamevs1), //changed to test
-    .VGA_R(gamer1), .VGA_G(gameg1), .VGA_B(gameb1), .endgame(eg1),.win(win1), .score(curr_score1)); // initialize level1
+     game #(.MAXSCORE(85))breakout1 (.mode(temp_state == L1), .CLK(clk), .BTN_LR(BTN_LR), .VGA_HS(gamehs1), .VGA_VS(gamevs1), 
+    .VGA_R(gamer1), .VGA_G(gameg1), .VGA_B(gameb1), .endgame(eg1),.win(win1), .score(curr_score1)); // instantiate level1
      
-     game2 #(.MAXSCORE(85)) breakout2 (.mode(temp_state == L2), .CLK(clk), .BTN_LR(BTN_LR), .VGA_HS(gamehs2), .VGA_VS(gamevs2), //changed to test
-    .VGA_R(gamer2), .VGA_G(gameg2), .VGA_B(gameb2), .endgame(eg2),.win(win2), .score(curr_score2)); // initialize level2
-    
-     game3 #(.MAXSCORE(65)) breakout3 (.mode(temp_state == L3), .CLK(clk), .BTN_LR(BTN_LR), .VGA_HS(gamehs3), .VGA_VS(gamevs3), //changed to test
-    .VGA_R(gamer3), .VGA_G(gameg3), .VGA_B(gameb3), .endgame(eg3),.win(win3), .score(curr_score3)); // initialize level3
-    
-     game4 #(.MAXSCORE(65))breakout4 (.mode(temp_state == L4), .CLK(clk), .BTN_LR(BTN_LR), .VGA_HS(gamehs4), .VGA_VS(gamevs4), //changed to test
-    .VGA_R(gamer4), .VGA_G(gameg4), .VGA_B(gameb4), .endgame(eg4),.win(win4), .score(curr_score4)); // initialize level4
-    
-     game5 #(.MAXSCORE(110)) breakout5 (.mode(temp_state == L5), .CLK(clk), .BTN_LR(BTN_LR), .VGA_HS(gamehs5), .VGA_VS(gamevs5), //changed to test
-    .VGA_R(gamer5), .VGA_G(gameg5), .VGA_B(gameb5), .endgame(eg5),.win(win5), .score(curr_score5)); // initialize level5
-    
-     game6 #(.MAXSCORE(110)) breakout6 (.mode(temp_state == L6), .CLK(clk), .BTN_LR(BTN_LR), .VGA_HS(gamehs6), .VGA_VS(gamevs6), //changed to test
-    .VGA_R(gamer6), .VGA_G(gameg6), .VGA_B(gameb6), .endgame(eg6),.win(win6), .score(curr_score6)); // initialize level6
-    
-     game7 #(.MAXSCORE(90)) breakout7 (.mode(temp_state == L7), .CLK(clk), .BTN_LR(BTN_LR), .VGA_HS(gamehs7), .VGA_VS(gamevs7), //changed to test
-    .VGA_R(gamer7), .VGA_G(gameg7), .VGA_B(gameb7), .endgame(eg7),.win(win7), .score(curr_score7)); // initialize level7
-    
-     game8 #(.MAXSCORE(90)) breakout8 (.mode(temp_state == L8), .CLK(clk), .BTN_LR(BTN_LR), .VGA_HS(gamehs8), .VGA_VS(gamevs8), //changed to test
-    .VGA_R(gamer8), .VGA_G(gameg8), .VGA_B(gameb8), .endgame(eg8),.win(win8), .score(curr_score8)); // initialize level8
-    
+     game2 #(.MAXSCORE(85)) breakout2 (.mode(temp_state == L2), .CLK(clk), .BTN_LR(BTN_LR), .VGA_HS(gamehs2), .VGA_VS(gamevs2), 
+    .VGA_R(gamer2), .VGA_G(gameg2), .VGA_B(gameb2), .endgame(eg2),.win(win2), .score(curr_score2)); // instantiate level2
    
+     game3 #(.MAXSCORE(65)) breakout3 (.mode(temp_state == L3), .CLK(clk), .BTN_LR(BTN_LR), .VGA_HS(gamehs3), .VGA_VS(gamevs3), 
+    .VGA_R(gamer3), .VGA_G(gameg3), .VGA_B(gameb3), .endgame(eg3),.win(win3), .score(curr_score3)); // instantiate level3
+   
+     game4 #(.MAXSCORE(65))breakout4 (.mode(temp_state == L4), .CLK(clk), .BTN_LR(BTN_LR), .VGA_HS(gamehs4), .VGA_VS(gamevs4), 
+    .VGA_R(gamer4), .VGA_G(gameg4), .VGA_B(gameb4), .endgame(eg4),.win(win4), .score(curr_score4)); // instantiate level4
+   
+     game5 #(.MAXSCORE(110)) breakout5 (.mode(temp_state == L5), .CLK(clk), .BTN_LR(BTN_LR), .VGA_HS(gamehs5), .VGA_VS(gamevs5),
+    .VGA_R(gamer5), .VGA_G(gameg5), .VGA_B(gameb5), .endgame(eg5),.win(win5), .score(curr_score5)); // instantiate level5
+   
+     game6 #(.MAXSCORE(110)) breakout6 (.mode(temp_state == L6), .CLK(clk), .BTN_LR(BTN_LR), .VGA_HS(gamehs6), .VGA_VS(gamevs6),
+    .VGA_R(gamer6), .VGA_G(gameg6), .VGA_B(gameb6), .endgame(eg6),.win(win6), .score(curr_score6)); // instantiate level6
+   
+     game7 #(.MAXSCORE(90)) breakout7 (.mode(temp_state == L7), .CLK(clk), .BTN_LR(BTN_LR), .VGA_HS(gamehs7), .VGA_VS(gamevs7), 
+    .VGA_R(gamer7), .VGA_G(gameg7), .VGA_B(gameb7), .endgame(eg7),.win(win7), .score(curr_score7)); // instantiate level7
+   
+     game8 #(.MAXSCORE(90)) breakout8 (.mode(temp_state == L8), .CLK(clk), .BTN_LR(BTN_LR), .VGA_HS(gamehs8), .VGA_VS(gamevs8), 
+    .VGA_R(gamer8), .VGA_G(gameg8), .VGA_B(gameb8), .endgame(eg8),.win(win8), .score(curr_score8)); // instantiate level8
+    
+ //change VGA and 7 segment display outputs depending on state, also reset any flags that should be reset  
  always@(temp_state)begin
         case(temp_state)
         SM: begin

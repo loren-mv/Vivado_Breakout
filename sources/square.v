@@ -50,13 +50,13 @@ module square #(
     output wire [11:0] o_y2,   // square bottom edge
     output reg [11:0] x,
     output reg [11:0] y,
-    output reg [8:0] score,
+    output reg [13:0] score,
     output reg endgame,
     output reg [21:0] col_detected = 0,
     output reg win_game
     );
 
-    reg [8:0] s;
+    reg [13:0] s;
     reg [11:0] x = IX;   // horizontal position of square centre
     reg [11:0] y = IY;   // vertical position of square centre
     reg y_dir = IY_DIR;  // vertical animation direction

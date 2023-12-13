@@ -29,7 +29,8 @@ module block
     IX_DIR=0,       // initial horizontal direction: 0 idle, 1 is left, 2 is right
     D_WIDTH=640,    // width of display
     D_HEIGHT=480,    // height of display
-    S_SIZE = 5
+    S_SIZE = 5,
+    BUFF = 2
     )
     (
     input wire toggle,
@@ -69,28 +70,7 @@ module block
             x = IX;   // horizontal position of block centre
             y = IY;   // vertical position of block centre
        end
-
-        //collision from bottom
-        // 2 pixel buffer
-        if( (s_y <= y + B_HEIGHT + S_SIZE) && (s_y >=y + B_HEIGHT + S_SIZE - 2) &&
-            (s_x <= x + B_WIDTH + S_SIZE) && (s_x >= x - B_WIDTH - S_SIZE) ) begin
-            hit_block = 2'b01;
-            x = 3000;
-            y = 3000;
-            end
-
-        //collision from top
-        // 2 pixel buffer
-        else if( (s_y >= y - B_HEIGHT - S_SIZE) && (s_y <= y - B_HEIGHT - S_SIZE + 2) &&
-            (s_x <= x + B_WIDTH + S_SIZE) && (s_x >= x - B_WIDTH - S_SIZE) ) begin
-           hit_block = 2'b01;       
-           x = 3000;
-           y = 3000;
-           end
-
-        //collision from right
-        // 2 pixel buffer
-         else if( (s_x <= x + B_WIDTH + S_SIZE) && (s_x >= x + B_WIDTH + S_SIZE - 2) && 
+        if( (s_x <= x + B_WIDTH + S_SIZE) && (s_x >= x + B_WIDTH + S_SIZE - BUFF) && 
             (s_y <= y + B_HEIGHT + S_SIZE) && (s_y >= y - B_HEIGHT - S_SIZE) ) begin
             hit_block = 2'b10;
             x = 3000;
@@ -99,12 +79,33 @@ module block
 
         //collision from left
         // 2 pixel buffer
-        else if( (s_x >= x - B_WIDTH - S_SIZE) && (s_x <= x - B_WIDTH - S_SIZE + 2) &&
+        else if( (s_x >= x - B_WIDTH - S_SIZE) && (s_x <= x - B_WIDTH - S_SIZE + BUFF) &&
             (s_y <= y + B_HEIGHT + S_SIZE) && (s_y >= y - B_HEIGHT - S_SIZE) ) begin
            hit_block = 2'b10;
            x = 3000;
            y = 3000;
            end
+        //collision from bottom
+        // 2 pixel buffer
+        else if( (s_y <= y + B_HEIGHT + S_SIZE) && (s_y >=y + B_HEIGHT + S_SIZE - BUFF) &&
+            (s_x <= x + B_WIDTH + S_SIZE) && (s_x >= x - B_WIDTH - S_SIZE) ) begin
+            hit_block = 2'b01;
+            x = 3000;
+            y = 3000;
+            end
+
+        //collision from top
+        // 2 pixel buffer
+        else if( (s_y >= y - B_HEIGHT - S_SIZE) && (s_y <= y - B_HEIGHT - S_SIZE + BUFF) &&
+            (s_x <= x + B_WIDTH + S_SIZE) && (s_x >= x - B_WIDTH - S_SIZE) ) begin
+           hit_block = 2'b01;       
+           x = 3000;
+           y = 3000;
+           end
+
+        //collision from right
+        // 2 pixel buffer
+       
 
         //edge case: if hit from exactly the corner
         else if( (s_x == x - B_WIDTH - S_SIZE && (s_y == y - B_HEIGHT - S_SIZE)) ||

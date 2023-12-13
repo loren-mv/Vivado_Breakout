@@ -39,7 +39,7 @@ module game#(
 
     localparam PW = 60; // paddle width
     localparam PH = 5; // paddle height
-    localparam PY = 480 - PH; // initial paddle y
+    localparam PY = 480 - 2*PH; // initial paddle y
     localparam PX = 320; // initial paddle x
 
     localparam BX = 32;

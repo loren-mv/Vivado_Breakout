@@ -52,7 +52,8 @@ module game8#(
     localparam B_SIZE = 5; // ball size
     localparam speed_x = 5;
     localparam speed_y = 5;
-
+    
+    localparam BUFFER = 3; //collison buffer pixels
 
     reg [15:0] cnt = 0; // pixel clock counter
     reg pix_stb = 0; // pixel clock
@@ -152,7 +153,7 @@ module game8#(
         .win_game(win)
     ); // ball instance
     
-    block #(.B_WIDTH(BH), .B_HEIGHT(BW), .IX(BX), .IY(BY)) b1(
+    block #(.B_WIDTH(BH), .B_HEIGHT(BW), .IX(BX), .IY(BY), .BUFF(BUFFER)) b1(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
@@ -170,7 +171,7 @@ module game8#(
         .hit_block(hit_block[35:34])
     );
     
-    block #(.B_WIDTH(BH), .B_HEIGHT(BW), .IX(BX), .IY(BY + 66)) b2(
+    block #(.B_WIDTH(BH), .B_HEIGHT(BW), .IX(BX), .IY(BY + 66), .BUFF(BUFFER)) b2(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
@@ -188,7 +189,7 @@ module game8#(
         .hit_block(hit_block[33:32])
     );
     
-    block #(.B_WIDTH(BW), .B_HEIGHT(BH), .IX(BX + 46), .IY(BY - 33)) b3(
+    block #(.B_WIDTH(BW), .B_HEIGHT(BH), .IX(BX + 46), .IY(BY - 33), .BUFF(BUFFER)) b3(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
@@ -206,7 +207,7 @@ module game8#(
         .hit_block(hit_block[31:30])
     );
     
-    block #(.B_WIDTH(BW), .B_HEIGHT(BH), .IX(BX + 46), .IY(BY + 33)) b4(
+    block #(.B_WIDTH(BW), .B_HEIGHT(BH), .IX(BX + 46), .IY(BY + 33), .BUFF(BUFFER)) b4(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
@@ -224,7 +225,7 @@ module game8#(
         .hit_block(hit_block[29:28])
     );
     
-    block #(.B_WIDTH(BW), .B_HEIGHT(BH), .IX(BX + 46), .IY(BY + 99)) b5(
+    block #(.B_WIDTH(BW), .B_HEIGHT(BH), .IX(BX + 46), .IY(BY + 99), .BUFF(BUFFER)) b5(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
@@ -242,7 +243,7 @@ module game8#(
         .hit_block(hit_block[27:26])
     );
     
-    block #(.B_WIDTH(BW), .B_HEIGHT(BH), .IX(BX + 134 + 10), .IY(BY - 33)) b6(
+    block #(.B_WIDTH(BW), .B_HEIGHT(BH), .IX(BX + 134 + 10), .IY(BY - 33), .BUFF(BUFFER)) b6(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
@@ -260,7 +261,7 @@ module game8#(
         .hit_block(hit_block[25:24])
     );
     
-    block #(.B_WIDTH(BH), .B_HEIGHT(BW), .IX(BX + 88 + 10), .IY(BY)) b7(
+    block #(.B_WIDTH(BH), .B_HEIGHT(BW), .IX(BX + 88 + 10), .IY(BY), .BUFF(BUFFER)) b7(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
@@ -278,7 +279,7 @@ module game8#(
         .hit_block(hit_block[23:22])
     );
     
-    block #(.B_WIDTH(BH), .B_HEIGHT(BW), .IX(BX + 88 + 10), .IY(BY + 66)) b8(
+    block #(.B_WIDTH(BH), .B_HEIGHT(BW), .IX(BX + 88 + 10), .IY(BY + 66), .BUFF(BUFFER)) b8(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
@@ -296,7 +297,7 @@ module game8#(
         .hit_block(hit_block[21:20])
     );
     
-    block #(.B_WIDTH(BW), .B_HEIGHT(BH), .IX(BX + 134 + 10), .IY(BY + 99)) b9(
+    block #(.B_WIDTH(BW), .B_HEIGHT(BH), .IX(BX + 134 + 10), .IY(BY + 99), .BUFF(BUFFER)) b9(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
@@ -315,7 +316,7 @@ module game8#(
     );
     
     
-    block #(.B_WIDTH(BW), .B_HEIGHT(BH), .IX(BX + 254 + 10), .IY(BY - 33)) b10(
+    block #(.B_WIDTH(BW), .B_HEIGHT(BH), .IX(BX + 254 + 10), .IY(BY - 33), .BUFF(BUFFER)) b10(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
@@ -334,7 +335,7 @@ module game8#(
     );
     
     
-    block #(.B_WIDTH(BW), .B_HEIGHT(BH), .IX(BX + 254 + 10), .IY(BY + 33)) b11(
+    block #(.B_WIDTH(BW), .B_HEIGHT(BH), .IX(BX + 254 + 10), .IY(BY + 33), .BUFF(BUFFER)) b11(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
@@ -352,7 +353,7 @@ module game8#(
         .hit_block(hit_block[15:14])
     );
     
-     block #(.B_WIDTH(BW), .B_HEIGHT(BH), .IX(BX + 254 + 10), .IY(BY + 99)) b12(
+     block #(.B_WIDTH(BW), .B_HEIGHT(BH), .IX(BX + 254 + 10), .IY(BY + 99), .BUFF(BUFFER)) b12(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
@@ -370,7 +371,7 @@ module game8#(
         .hit_block(hit_block[13:12])
     );
     
-     block #(.B_WIDTH(BH), .B_HEIGHT(BW), .IX(BX + 300 + 10), .IY(BY)) b13(
+     block #(.B_WIDTH(BH), .B_HEIGHT(BW), .IX(BX + 300 + 10), .IY(BY), .BUFF(BUFFER)) b13(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
@@ -389,7 +390,7 @@ module game8#(
     );
     
     //incomplete from 14 to 22
-    block #(.B_WIDTH(BH), .B_HEIGHT(BW), .IX(BX + 300 + 10), .IY(BY + 66)) b14(
+    block #(.B_WIDTH(BH), .B_HEIGHT(BW), .IX(BX + 300 + 10), .IY(BY + 66), .BUFF(BUFFER)) b14(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
@@ -407,7 +408,7 @@ module game8#(
         .hit_block(hit_block[9:8])
     );
     
-    block #(.B_WIDTH(10), .B_HEIGHT(36), .IX(BX + 333 + 10), .IY(BY - 6)) b15(
+    block #(.B_WIDTH(10), .B_HEIGHT(36), .IX(BX + 333 + 10), .IY(BY - 6), .BUFF(BUFFER)) b15(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
@@ -425,7 +426,7 @@ module game8#(
         .hit_block(hit_block[7:6])
     );
     
-    block #(.B_WIDTH(10), .B_HEIGHT(36), .IX(BX + 333 + 10), .IY(BY + 72)) b16(
+    block #(.B_WIDTH(10), .B_HEIGHT(36), .IX(BX + 333 + 10), .IY(BY + 72), .BUFF(BUFFER)) b16(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
@@ -443,7 +444,7 @@ module game8#(
         .hit_block(hit_block[5:4])
     );
     
-    block # (.B_WIDTH(10), .B_HEIGHT(36), .IX(BX + 366 + 10), .IY(BY - 6)) b17(
+    block # (.B_WIDTH(10), .B_HEIGHT(36), .IX(BX + 366 + 10), .IY(BY - 6), .BUFF(BUFFER)) b17(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
@@ -461,7 +462,7 @@ module game8#(
         .hit_block(hit_block[3:2])
     );
     
-        block #(.B_WIDTH(10), .B_HEIGHT(36), .IX(BX + 366 + 10), .IY(BY + 72)) b18(
+        block #(.B_WIDTH(10), .B_HEIGHT(36), .IX(BX + 366 + 10), .IY(BY + 72), .BUFF(BUFFER)) b18(
      //.endgame(endgame|!mode),
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),

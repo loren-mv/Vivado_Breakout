@@ -25,10 +25,10 @@ module scoretrack(
     output reg [13:0]high_score = 0
     );
     always@(input_score)begin
-        if(input_score > high_score)
+        if(input_score > high_score) //if the current score is greater than the high score, then replace the high score
             high_score = input_score;
-        else 
-            high_score = high_score;
+        else
+            high_score = high_score; //otherwise don't change it
     end
     
 endmodule
