@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: Digilent Inc.
 // Engineer: Thomas Kappenman
@@ -25,6 +26,7 @@ module PS2Receiver(
     input wire kdata,
     //output [31:0] keycodeout,
     output reg [3:0] level,
+    output reg other_out,
     output reg left,
     output reg right
     );
@@ -91,19 +93,21 @@ always @(posedge flag)begin
         'h36: begin level = 6; end
         'h3D: begin level = 7; end
         'h3E: begin level = 8; end
+        'H29: begin other_out = 1; end
         'h1C: begin left = 1; end //A
         'h23: begin right = 1; end //D
     endcase
     
     case({dataprev,datacur})
-        'hF016: begin level = 1; end
-        'hF01E: begin level = 2; end
-        'hF026: begin level = 3; end
-        'hF025: begin level = 4; end
-        'hF02E: begin level = 5; end
-        'hF036: begin level = 6; end
-        'hF03D: begin level = 7; end
-        'hF03E: begin level = 8; end
+        'hF016: begin level = 0; end // 1
+        'hF01E: begin level = 0; end // 2
+        'hF026: begin level = 0; end // 3
+        'hF025: begin level = 0; end // 4
+        'hF02E: begin level = 0; end // 5
+        'hF036: begin level = 0; end // 6
+        'hF03D: begin level = 0; end // 7
+        'hF03E: begin level = 0; end // 8
+        'hF029: begin other_out = 0; end //space bar
         'hF01C: begin left = 0; end // A
         'hF023: begin right = 0; end // D
      endcase
@@ -111,3 +115,4 @@ always @(posedge flag)begin
 end
 
 endmodule
+

@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 12/06/2023 02:35:03 PM
+// Create Date: 12/10/2023 10:42:57 PM
 // Design Name: 
-// Module Name: keyboard_test_top
+// Module Name: keyboard_top
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -18,36 +18,32 @@
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
-//Outputs 3 registers level: a level select from 1-8 inclusive
-//                    move_right: 1 when d is pressed 0 when released
-//                    move_left:  1 when a is pressed 0 when released
+
 
 module keyboard_top(
-    input wire CLK,
+    input wire CLK100MHZ,
     input wire PS2_CLK,
     input wire PS2_DATA,
-    //output wire [6:0]SEG,
-    //output wire[7:0]AN,
-    //output wire DP,
-    output wire UART_TXD,
+    output wire [3:0] level,
+    output wire other_out,
     output wire move_right,
     output wire move_left,
-    output wire [3:0] level
-    );
-    
-reg CLK50MHZ=0;    
+    output reg UART_TXD
+);
 
-always @(posedge(CLK))begin
-    CLK50MHZ<=~CLK50MHZ;
+reg CLK50MHZ = 0;
+always @ (posedge CLK100MHZ) begin
+    CLK50MHZ <= ~ CLK50MHZ;
 end
 
-PS2Receiver keyboard (
-.clk(CLK50MHZ),
-.kclk(PS2_CLK),
-.kdata(PS2_DATA),
-.level(level),
-.right(move_right),
-.left(move_left)
-);  
+PS2Receiver keyboard(
+    .clk(CLK50MHZ),
+    .kclk(PS2_CLK),
+    .kdata(PS2_DATA),
+    .level(level),
+    .other_out(other_out),
+    .right(move_right),
+    .left(move_left)
+);
 
 endmodule

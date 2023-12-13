@@ -3,7 +3,7 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 11/27/2020 03:08:12 PM
+// Create Date: 10/23/2023 10:32:08 AM
 // Design Name: 
 // Module Name: clock_divider
 // Project Name: 
@@ -20,35 +20,30 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module clock_divider
-    #(
-    DIVISOR = 50000000 // parameter for 1 Hz clock
-    )
-    (
-    input wire clk_in, // input clock
-    output reg clk_out // output clock
+module clock_divider(
+    input in_clk,
+    output reg out_clk
     );
-    
-    reg [31:0] ctr; // counter bits
-    
-    // counter block
-    always @(posedge clk_in)
-    begin
-        if (ctr == DIVISOR-1) 
-            ctr <= 0; // reset counter to zero if reach #DIVISOR reached
-        else
-            ctr <= ctr + 1; // increment to counter to keep track until #DIVISOR reached
-    end
-    
-    // flip flop - comparator block
-    always @ (posedge clk_in)
-    begin
-        if (ctr == DIVISOR-1)
-            clk_out <= ~clk_out; // simulate low state
-        else
-            clk_out <= clk_out; // simulate high state
-    end
-    
+    reg[31:0] count;
+ 
+	initial begin
+		out_clk =0;
+		count = 0;
+	end
+	
+	always @(posedge in_clk)
+	begin
+	   if(count == 50000) begin //50000000 for 1 second clock
+	       out_clk = ~out_clk;
+	       count = 0;
+	   end else begin
+	       count <= count + 1;
+	   end
+	 end
+	   
+
+		// increment count by one
+		// if count equals to some big number (that you need to calculate),
+		//   then flip the output clock,
+		//   and reset count to zero.
 endmodule
-
-

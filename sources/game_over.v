@@ -20,16 +20,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module menu_screen (
-    input wire mode, // mode to check if menu screen needs to update
-    input wire CLK, // 100 MHz clock
-    output wire VGA_HS, // vga horizontal sync
-    output wire VGA_VS, // vga vertical sync
-    output reg [3:0] VGA_R, // vga red channels
-    output reg [3:0] VGA_G, // vga green channels
-    output reg [3:0] VGA_B // vga blue channels
+module game_over (
+    input wire CLK,             // board clock: 100 MHz on Arty/Basys3/Nexys
+    output wire VGA_HS,       // horizontal sync output
+    output wire VGA_VS,       // vertical sync output
+    output reg [3:0] VGA_R,     // 4-bit VGA red output
+    output reg [3:0] VGA_G,     // 4-bit VGA green output
+    output reg [3:0] VGA_B      // 4-bit VGA blue output
     );
-    
+
+    // wire rst = RST_BTN;  // reset is active high on Basys3 (BTNC)
+
     wire [9:0] x;  // current pixel x position: 10-bit value: 0-1023
     wire [8:0] y;  // current pixel y position:  9-bit value: 0-511
     wire animate;  // high when we're ready to animate at end of drawing
@@ -39,7 +40,7 @@ module menu_screen (
     reg [15:0] cnt = 0; // clock divider count
     reg pix_stb = 0; // pixel clock   
     reg [25:0] counter = 0; // 26-bit counter, initialized to 0
-   wire out_clk;
+    wire out_clk;
    
     anim_divider framedivider(.CLK(CLK), .out_clk(out_clk));
 
@@ -51,7 +52,6 @@ module menu_screen (
     vga640x480 display (
         .i_clk(CLK),
         .i_pix_stb(pix_stb),
-        .i_rst(mode),
         .o_hs(VGA_HS), 
         .o_vs(VGA_VS), 
         .o_x(x), 
@@ -73,7 +73,7 @@ localparam SCREEN_WIDTH = 640; // screen width
         .ADDR_WIDTH(VRAM_A_WIDTH), 
         .DATA_WIDTH(VRAM_D_WIDTH), 
         .DEPTH(VRAM_DEPTH), 
-        .MEMFILE("fr.mem"))
+        .MEMFILE("game_over_frame1_edit.mem"))
         vram(
         .i_addr(address), 
         .i_clk(CLK), 
@@ -91,7 +91,7 @@ localparam SCREEN_WIDTH = 640; // screen width
     reg [11:0] color; // color bits for vga
     
   initial
-        $readmemh("fr_palette.mem", palette);  // bitmap palette to load
+        $readmemh("game_over_frame1_edit_palette.mem", palette);  // bitmap palette to load
  
     
      
@@ -120,7 +120,7 @@ localparam SCREEN_WIDTH = 640; // screen width
         VGA_G[0] <= color[4];
         VGA_B[0] <= color[0];
 
-        if( (out_clk == 0) && (x>210) && (x<425) && (y>333) && (y < 378)) begin
+        if( (out_clk == 0) && (x>143) && (x<495) && (y>150) && (y < 330)) begin
         VGA_R[3] <= 0;
         VGA_G[3] <= 0;
         VGA_B[3] <= 0;
@@ -138,3 +138,4 @@ localparam SCREEN_WIDTH = 640; // screen width
     
     
 endmodule
+

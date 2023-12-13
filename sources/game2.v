@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module game#(
+module game2#(
     MAXSCORE = 80
 )
 (
@@ -39,7 +39,7 @@ module game#(
 
     localparam PW = 60; // paddle width
     localparam PH = 5; // paddle height
-    localparam PY = 480 - PH; // initial paddle y
+    localparam PY = 480 - 2*PH; // initial paddle y
     localparam PX = 320; // initial paddle x
 
     localparam BX = 32;
@@ -50,8 +50,8 @@ module game#(
     localparam IX = 320; // intial ball x
     localparam IY = 470 - PH - PH - 30; //initial ball y
     localparam B_SIZE = 5; // ball size
-    localparam speed_x = 1;
-    localparam speed_y = 1;
+    localparam speed_x = 5;
+    localparam speed_y = 5;
 
 
     reg [15:0] cnt = 0; // pixel clock counter
@@ -98,7 +98,7 @@ module game#(
     always @(posedge CLK)
     begin
         {pix_stb, cnt} <= cnt + 16'h4000;  // divide by 4: (2^16)/4 = 0x4000
-    end
+    end    
 
     vga640x480 display (
         .i_clk(CLK),
@@ -125,7 +125,7 @@ module game#(
         .com(com)
         ); // paddle instance
 
-    square #(.PY(PY), .PH(PH), .IX(IX), .IY(IY), .H_SIZE(B_SIZE), .MAXSCORE(MAXSCORE),.speed_x(speed_x), .speed_y(speed_y)) b0 (
+    square #(.MAXSCORE(MAXSCORE),.PY(PY), .PH(PH), .IX(IX), .IY(IY), .H_SIZE(B_SIZE), .speed_x(speed_x), .speed_y(speed_y)) b0 (
         .toggle(1),
         .com(com),
         .mode(mode),
@@ -384,23 +384,23 @@ module game#(
         .hit_block(hit_block[9:8])
     );
     
-    block #(.B_WIDTH(BW), .B_HEIGHT(BH), .IX(BX + 325), .IY(BY + 25), .S_SIZE(B_SIZE)) b14(
-    //.endgame(endgame|!mode),
-       .i_clk(CLK), 
-       .i_ani_stb(pix_stb),
-       .i_animate(animate),
-       //.start(active),
-       .mode(mode),
-       .s_x(s_x),
-       .s_y(s_y),
-       .col_detected(col_detected[3]),
-       .o_x1(sq_b14_x1),
-       .o_x2(sq_b14_x2),
-       .o_y1(sq_b14_y1),
-       .o_y2(sq_b14_y2),
-       .com(com),
-       .hit_block(hit_block[7:6])
-   );
+     block #(.B_WIDTH(BW), .B_HEIGHT(BH), .IX(BX + 325), .IY(BY + 25), .S_SIZE(B_SIZE)) b14(
+     //.endgame(endgame|!mode),
+        .i_clk(CLK), 
+        .i_ani_stb(pix_stb),
+        .i_animate(animate),
+        //.start(active),
+        .mode(mode),
+        .s_x(s_x),
+        .s_y(s_y),
+        .col_detected(col_detected[3]),
+        .o_x1(sq_b14_x1),
+        .o_x2(sq_b14_x2),
+        .o_y1(sq_b14_y1),
+        .o_y2(sq_b14_y2),
+        .com(com),
+        .hit_block(hit_block[7:6])
+    );
     
      block #(.B_WIDTH(BW), .B_HEIGHT(BH), .IX(BX + 397), .IY(BY + 25), .S_SIZE(B_SIZE)) b15(
      //.endgame(endgame|!mode),

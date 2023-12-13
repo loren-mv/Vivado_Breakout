@@ -71,18 +71,18 @@ module vga640x480(
     begin
         if (i_rst)  // reset to start of frame
         begin
-            h_count <= 0;
-            v_count <= 0;
+            h_count <= 0; // horizontal pixel count
+            v_count <= 0; // vertical pixel count
         end
         if (i_pix_stb)  // once per pixel
         begin
             if (h_count == LINE)  // end of line
             begin
                 h_count <= 0;
-                v_count <= v_count + 1;
+                v_count <= v_count + 1; // start vertical pixel count
             end
             else 
-                h_count <= h_count + 1;
+                h_count <= h_count + 1; // start horizontal pixel count
 
             if (v_count == SCREEN)  // end of screen
                 v_count <= 0;
